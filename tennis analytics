@@ -1,0 +1,75 @@
+Tennis has evolved into a sport driven not only by athleticism but also by data-driven insights. From serve percentages to rally lengths, analytics can help uncover what really makes players successful. With R, we can turn raw tennis match data into powerful visualizations and predictive models.
+
+In this article, we’ll walk through a simple workflow for tennis analytics in R. If you’d like to dive much deeper, check out my full guide: Mastering Tennis Analytics with R: Data Science for Player Performance and Match Strategy .
+
+📊 Creating a Sample Tennis Dataset
+Let’s start with a simulated dataset that mimics tennis match statistics:
+
+
+library(dplyr)
+library(ggplot2)
+
+set.seed(123)
+
+matches <- data.frame(
+  player = sample(paste("Player", 1:8), 40, replace = TRUE),
+  opponent = sample(paste("Player", 1:8), 40, replace = TRUE),
+  aces = rpois(40, lambda = 6),
+  double_faults = rpois(40, lambda = 2),
+  winners = rpois(40, lambda = 25),
+  unforced_errors = rpois(40, lambda = 18),
+  first_serve_pct = round(runif(40, 55, 75), 1),
+  match_duration = round(rnorm(40, mean = 110, sd = 25))
+)
+
+head(matches)
+⚡ Offensive Index Metric
+One way to measure player efficiency is by combining positive actions (aces + winners) and subtracting negative ones (double faults + unforced errors). Let’s call this the Offensive Index:
+
+
+matches <- matches %>%
+  mutate(
+    offensive_index = (aces + winners) - (double_faults + unforced_errors)
+  )
+
+head(matches)
+📈 Visualizing Player Performance
+We can now compare first serve percentage against offensive index to see which players combine consistency with aggression:
+
+
+ggplot(matches, aes(x = first_serve_pct, y = offensive_index, color = player)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    title = "Serve Percentage vs Offensive Index",
+    x = "First Serve %",
+    y = "Offensive Index"
+  ) +
+  theme_minimal()
+This scatterplot highlights well-balanced players and those who trade consistency for power.
+
+🔮 Predicting Match Duration
+We can also explore whether unforced errors are linked to longer match durations using a linear regression model:
+
+
+model <- lm(match_duration ~ unforced_errors, data = matches)
+summary(model)
+
+ggplot(matches, aes(x = unforced_errors, y = match_duration)) +
+  geom_point(color = "darkgreen") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  labs(
+    title = "Unforced Errors vs Match Duration",
+    x = "Unforced Errors",
+    y = "Match Duration (minutes)"
+  ) +
+  theme_minimal()
+The regression can show whether higher error counts are associated with longer matches.
+
+🏆 Key Takeaways
+Tennis data offers rich opportunities for analysis: serves, winners, errors, and match duration.
+R makes it easy to calculate custom performance metrics like the Offensive Index.
+Visualization and regression modeling can uncover patterns not visible in raw stats.
+And this is just scratching the surface. If you want to take your tennis analytics to the next level — building detailed performance models and strategy insights — check out my full guide: Mastering Tennis Analytics with R: Data Science for Player Performance and Match Strategy .
+
+With the right tools, you can transform tennis data into a winning strategy.
+https://rprogrammingbooks.com/product/mastering-tennis-analytics-with-r-data-science-for-player-performance-and-match-strategy/
